@@ -22,7 +22,6 @@ function App() {
   const [currentRequestId, setCurrentRequestId] = useState(null);
   const [historyItems, setHistoryItems] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
-  const [statusType, setStatusType] = useState('info');
 
   useEffect(() => {
     loadHistory();
@@ -39,11 +38,8 @@ function App() {
         createdAt: item.createdAt,
       }));
       setHistoryItems(mapped);
-      console.log('[ui] history loaded', { count: mapped.length });
     } catch (error) {
-      console.error('[ui] history load failed', error);
-      setStatusType('error');
-      setStatusMessage(error.message || 'Failed to load history.');
+      setStatusMessage(error.message);
     }
   }
 
@@ -55,43 +51,25 @@ function App() {
   async function handleGenerate(event) {
     event.preventDefault();
     setLoading(true);
-    setStatusType('info');
-    setStatusMessage('Generating draft...');
+    setStatusMessage('');
 
     try {
       const problemDescription = buildProblemDescription(formData);
-      console.log('[ui] generating draft', {
-        issueLength: formData.issueDescription.length,
-        messageType: formData.messageType,
-        tone: formData.tone,
-      });
-
       const result = await submitDraft(problemDescription);
 
       if (result.warning) {
         setDraftText('');
         setCurrentRequestId(null);
-        setStatusType('error');
         setStatusMessage(result.warning);
-        return;
-      }
-
-      if (!result.generatedDraft) {
-        setStatusType('error');
-        setStatusMessage('No draft text returned from server.');
         return;
       }
 
       setDraftText(result.generatedDraft);
       setCurrentRequestId(result.id);
-      setStatusType('success');
       setStatusMessage('Draft generated. You can edit it and save it.');
-      console.log('[ui] draft generated', { requestId: result.id, draftLength: result.generatedDraft.length });
       await loadHistory();
     } catch (error) {
-      console.error('[ui] generate failed', error);
-      setStatusType('error');
-      setStatusMessage(error.message || 'Generation failed.');
+      setStatusMessage(error.message);
     } finally {
       setLoading(false);
     }
@@ -99,7 +77,6 @@ function App() {
 
   async function handleSave() {
     if (!currentRequestId) {
-      setStatusType('error');
       setStatusMessage('Generate a draft first, then save your edits.');
       return;
     }
@@ -107,7 +84,6 @@ function App() {
     try {
       const result = await saveDraft({ requestId: currentRequestId, editedDraft: draftText });
       const seconds = result.draftingSeconds;
-      setStatusType('success');
       if (typeof seconds === 'number') {
         setStatusMessage(`Draft saved. Time spent: ${seconds} seconds.`);
       } else {
@@ -115,27 +91,21 @@ function App() {
       }
       await loadHistory();
     } catch (error) {
-      console.error('[ui] save failed', error);
-      setStatusType('error');
-      setStatusMessage(error.message || 'Save failed.');
+      setStatusMessage(error.message);
     }
   }
 
   async function handleFeedback(useful) {
     if (!currentRequestId) {
-      setStatusType('error');
       setStatusMessage('Generate a draft first, then send feedback.');
       return;
     }
 
     try {
       await sendFeedback({ requestId: currentRequestId, useful });
-      setStatusType('success');
       setStatusMessage('Feedback submitted successfully.');
     } catch (error) {
-      console.error('[ui] feedback failed', error);
-      setStatusType('error');
-      setStatusMessage(error.message || 'Feedback failed.');
+      setStatusMessage(error.message);
     }
   }
 
@@ -169,7 +139,7 @@ function App() {
 
       <HistorySection items={historyItems} />
 
-      {statusMessage && <p className={`status ${statusType === 'error' ? 'status-error' : ''}`}>{statusMessage}</p>}
+      {statusMessage && <p className="status">{statusMessage}</p>}
     </main>
   );
 }

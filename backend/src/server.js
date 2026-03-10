@@ -230,8 +230,6 @@ app.use((err, req, res, next) => {
   const status = err.status || 500;
   const message = err?.message || 'Internal server error.';
   console.error(err);
-  const status = err.status || 500;
-  const message = status === 500 ? 'Internal server error.' : err.message;
   res.status(status).json({ error: message });
 });
 

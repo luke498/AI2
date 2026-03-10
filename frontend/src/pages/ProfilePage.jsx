@@ -2,40 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { getProfileStats } from '../services/api';
 
 function ProfilePage() {
-  const [stats, setStats] = useState({ draftsGenerated: 0, savedDrafts: 0, feedbackCount: 0 });
+  const [stats, setStats] = useState({ draftsGenerated: 0, draftsSaved: 0, feedbackCount: 0 });
   const [error, setError] = useState('');
 
   useEffect(() => {
     getProfileStats()
-      .then((data) => {
-        setStats({
-          draftsGenerated: data.draftsGenerated || 0,
-          savedDrafts: data.savedDrafts || data.draftsSaved || 0,
-          feedbackCount: data.feedbackCount || 0,
-        });
-      })
+      .then((data) => setStats(data))
       .catch((err) => setError(err.message || 'Failed to load profile stats.'));
   }, []);
 
   return (
     <section className="card">
       <h2>Profile</h2>
-      <p className="muted">Welcome to your DraftMate AI profile. Track your writing activity here.</p>
-      <div className="card" style={{ marginBottom: '12px' }}>
-        <p><strong>User:</strong> Student User</p>
-        <p><strong>Email:</strong> student@example.com</p>
-      </div>
-
       {error && <p className="status status-error">{error}</p>}
-
       <div className="stats-grid">
         <div className="stat-card">
           <h3>Total Drafts Generated</h3>
           <p>{stats.draftsGenerated}</p>
         </div>
         <div className="stat-card">
-          <h3>Total Saved Drafts</h3>
-          <p>{stats.savedDrafts}</p>
+          <h3>Total Drafts Saved</h3>
+          <p>{stats.draftsSaved}</p>
         </div>
         <div className="stat-card">
           <h3>Total Feedback Submitted</h3>

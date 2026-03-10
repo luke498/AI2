@@ -15,9 +15,6 @@ function HistoryPage() {
   return (
     <section className="card">
       <h2>History</h2>
-      <div style={{ marginBottom: '8px' }}>
-        <Link to="/">Back to Home</Link>
-      </div>
       {error && <p className="status status-error">{error}</p>}
       {items.length === 0 ? (
         <p className="muted">No drafts saved yet.</p>

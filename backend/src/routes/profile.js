@@ -11,7 +11,7 @@ router.get('/profile/stats', async (req, res, next) => {
 
     return res.json({
       draftsGenerated: draftsGeneratedRow?.count || 0,
-      savedDrafts: draftsSavedRow?.count || 0,
+      draftsSaved: draftsSavedRow?.count || 0,
       feedbackCount: feedbackRow?.count || 0,
     });
   } catch (error) {

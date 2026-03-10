@@ -1,0 +1,20 @@
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS requests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  problem_description TEXT NOT NULL,
+  generated_draft TEXT NOT NULL,
+  edited_draft TEXT,
+  generated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  saved_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS feedback (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  request_id INTEGER NOT NULL,
+  rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  comment TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE CASCADE
+);

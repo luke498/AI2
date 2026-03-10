@@ -4,6 +4,8 @@ const express = require('express');
 const cors = require('cors');
 const { initializeDatabase, run, all, get } = require('./db/database');
 const { generateDraft } = require('./services/openaiService');
+const draftRoutes = require('./routes/draft');
+const profileRoutes = require('./routes/profile');
 
 const app = express();
 const port = Number(process.env.PORT) || 4000;
@@ -43,6 +45,17 @@ function mapHistoryRow(row) {
 app.use(cors());
 app.use(express.json());
 
+app.use(draftRoutes);
+app.use(profileRoutes);
+
+app.use((req, res, next) => {
+  console.log('[api] incoming request', {
+    method: req.method,
+    path: req.path,
+  });
+  next();
+});
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
@@ -51,6 +64,11 @@ app.post('/submit', async (req, res, next) => {
   try {
     const { problemDescription } = req.body;
 
+    console.log('[submit] payload received', {
+      hasProblemDescription: typeof problemDescription === 'string',
+      length: typeof problemDescription === 'string' ? problemDescription.length : 0,
+    });
+
     if (!problemDescription || typeof problemDescription !== 'string') {
       return res.status(400).json({ error: 'problemDescription is required.' });
     }
@@ -58,6 +76,7 @@ app.post('/submit', async (req, res, next) => {
     const trimmedDescription = problemDescription.trim();
 
     if (hasSensitiveTopic(trimmedDescription)) {
+      console.log('[submit] blocked by sensitive-topic guardrail');
       return res.status(200).json({
         warning:
           'Sensitive topic detected (legal/medical/financial advice). Please consult a qualified professional instead of using an AI draft.',
@@ -76,6 +95,11 @@ app.post('/submit', async (req, res, next) => {
       'SELECT id, generated_at, saved_at, created_at FROM requests WHERE id = ?',
       [result.id]
     );
+
+    console.log('[submit] success', {
+      requestId: saved.id,
+      draftLength: draft.length,
+    });
 
     return res.status(201).json({
       id: saved.id,
@@ -123,6 +147,10 @@ app.post('/save', async (req, res, next) => {
 
     let draftingSeconds = null;
     if (updated.generated_at && updated.saved_at) {
+      const diff = new Date(updated.saved_at).getTime() - new Date(updated.generated_at).getTime();
+      if (!Number.isNaN(diff) && diff >= 0) {
+        draftingSeconds = Math.round(diff / 1000);
+      }
       draftingSeconds = Math.round(
         (new Date(updated.saved_at).getTime() - new Date(updated.generated_at).getTime()) / 1000
       );
@@ -147,6 +175,8 @@ app.get('/history', async (req, res, next) => {
        FROM requests
        ORDER BY created_at DESC`
     );
+
+    console.log('[history] returning rows', { count: rows.length });
 
     return res.json(rows.map(mapHistoryRow));
   } catch (error) {
@@ -189,6 +219,16 @@ app.post('/feedback', async (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  console.error('[api] request failed', {
+    path: req.path,
+    method: req.method,
+    message: err?.message,
+    status: err?.status,
+    code: err?.code,
+  });
+
+  const status = err.status || 500;
+  const message = err?.message || 'Internal server error.';
   console.error(err);
   const status = err.status || 500;
   const message = status === 500 ? 'Internal server error.' : err.message;

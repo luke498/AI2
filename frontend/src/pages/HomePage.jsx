@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import DraftForm from '../components/DraftForm';
 import ResultEditor from '../components/ResultEditor';
 import HistorySection from '../components/HistorySection';
@@ -134,6 +135,10 @@ function HomePage() {
         <p className="warning">
           This AI-generated draft may contain mistakes. Please review before using.
         </p>
+        <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+          <Link to="/profile">Go to Profile</Link>
+          <Link to="/history">Go to History</Link>
+        </div>
       </header>
 
       <DraftForm

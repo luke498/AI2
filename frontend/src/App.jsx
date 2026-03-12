@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Navigate, Route, Routes } from 'react-router-dom';
+import { NavLink, Navigate, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import HistoryPage from './pages/HistoryPage';
@@ -9,9 +9,11 @@ function App() {
   return (
     <main className="container">
       <nav className="navbar card">
-        <Link to="/">Home</Link>
-        <Link to="/profile">Profile</Link>
-        <Link to="/history">History</Link>
+        <NavLink to="/" end>
+          Home
+        </NavLink>
+        <NavLink to="/profile">Profile</NavLink>
+        <NavLink to="/history">History</NavLink>
       </nav>
 
       <Routes>

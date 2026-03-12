@@ -50,7 +50,7 @@ function ProfilePage() {
     <section className="card">
       <h2>Profile</h2>
       <p className="muted">Welcome to your DraftMate AI profile. Track your writing activity here.</p>
-      <div className="card" style={{ marginBottom: '12px' }}>
+      <div className="card profile-card">
         {isEditing ? (
           <>
             <label>
@@ -60,7 +60,7 @@ function ProfilePage() {
                 name="name"
                 value={draftProfile.name}
                 onChange={handleDraftChange}
-                style={{ width: '100%', marginTop: '4px', marginBottom: '8px', padding: '8px' }}
+                className="profile-input"
               />
             </label>
             <label>
@@ -70,10 +70,10 @@ function ProfilePage() {
                 name="email"
                 value={draftProfile.email}
                 onChange={handleDraftChange}
-                style={{ width: '100%', marginTop: '4px', marginBottom: '8px', padding: '8px' }}
+                className="profile-input"
               />
             </label>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div className="inline-actions">
               <button onClick={saveEdit}>Save</button>
               <button className="secondary" onClick={cancelEdit}>Cancel</button>
             </div>
@@ -104,7 +104,7 @@ function ProfilePage() {
         </div>
       </div>
 
-      <div style={{ marginTop: '12px' }}>
+      <div className="page-links">
         <Link to="/">Back to Home</Link>
       </div>
     </section>

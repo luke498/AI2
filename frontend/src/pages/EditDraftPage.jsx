@@ -48,7 +48,7 @@ function EditDraftPage() {
   return (
     <section className="card">
       <h2>Edit Draft #{id}</h2>
-      <div style={{ marginBottom: '8px', display: 'flex', gap: '12px' }}>
+      <div className="page-links">
         <Link to="/history">Back to History</Link>
         <Link to="/">Back to Home</Link>
       </div>

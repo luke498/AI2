@@ -15,7 +15,7 @@ function HistoryPage() {
   return (
     <section className="card">
       <h2>History</h2>
-      <div style={{ marginBottom: '8px' }}>
+      <div className="page-links">
         <Link to="/">Back to Home</Link>
       </div>
       {error && <p className="status status-error">{error}</p>}

@@ -109,7 +109,7 @@ function HomePage() {
         <p className="warning">
           This AI-generated draft may contain mistakes. Please review before using.
         </p>
-        <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+        <div className="page-links">
           <Link to="/profile">Go to Profile</Link>
           <Link to="/history">Go to History</Link>
         </div>

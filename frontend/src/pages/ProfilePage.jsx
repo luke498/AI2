@@ -104,9 +104,6 @@ function ProfilePage() {
         </div>
       </div>
 
-      <div className="page-links">
-        <Link to="/">Back to Home</Link>
-      </div>
     </section>
   );
 }

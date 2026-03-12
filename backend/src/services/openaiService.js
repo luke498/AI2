@@ -1,15 +1,6 @@
 const OpenAI = require('openai');
 
-const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-function isThai(text) {
-  return /[\u0E00-\u0E7F]/.test(text);
 const model = process.env.MODEL || 'llama-3.1-8b-instant';
-
 
 const client = new OpenAI({
   apiKey: process.env.GROQ_API_KEY,
@@ -41,11 +32,6 @@ function extractTextFromResponse(response) {
 }
 
 async function generateDraft(problemDescription) {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error('OPENAI_API_KEY is not configured.');
-  }
-
-  const respondInThai = isThai(problemDescription);
   if (!process.env.GROQ_API_KEY) {
     throw new Error('GROQ_API_KEY is not configured.');
   }

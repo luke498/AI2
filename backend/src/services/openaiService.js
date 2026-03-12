@@ -1,5 +1,13 @@
 const OpenAI = require('openai');
 
+const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+function isThai(text) {
+  return /[\u0E00-\u0E7F]/.test(text);
 const model = process.env.MODEL || 'llama-3.1-8b-instant';
 
 const client = new OpenAI({
@@ -32,6 +40,11 @@ function extractTextFromResponse(response) {
 }
 
 async function generateDraft(problemDescription) {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY is not configured.');
+  }
+
+  const respondInThai = isThai(problemDescription);
   if (!process.env.GROQ_API_KEY) {
     throw new Error('GROQ_API_KEY is not configured.');
   }
@@ -43,6 +56,11 @@ async function generateDraft(problemDescription) {
     : 'Respond in English language only.';
 
   const prompt = `You are an assistant that writes professional complaint and support emails.
+Detect the user language and respond in the same language.
+${languageInstruction}
+
+Problem description:
+${problemDescription}
 
 ${languageInstruction}
 
@@ -53,6 +71,7 @@ Write a concise, clear, polite draft that a user can edit.`;
 
   console.log('[openai] generating draft', {
     model,
+    inputLength: problemDescription.length,
     inputLength: safeProblemDescription.length,
     language: respondInThai ? 'thai' : 'english',
   });
@@ -69,6 +88,7 @@ Write a concise, clear, polite draft that a user can edit.`;
       console.error('[openai] empty response text', {
         responseId: response?.id,
       });
+      throw new Error('OpenAI response did not contain draft text.');
       throw new Error('Groq response did not contain draft text.');
     }
 
@@ -90,4 +110,5 @@ Write a concise, clear, polite draft that a user can edit.`;
 
 module.exports = {
   generateDraft,
+};
 };

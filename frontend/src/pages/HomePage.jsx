@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import DraftForm from '../components/DraftForm';
 import ResultEditor from '../components/ResultEditor';
-import HistorySection from '../components/HistorySection';
 import FeedbackSection from '../components/FeedbackSection';
 import {
   buildProblemDescription,
-  getHistory,
   sendFeedback,
   submitDraft,
   saveDraft,
@@ -21,30 +19,8 @@ function HomePage() {
   const [loading, setLoading] = useState(false);
   const [draftText, setDraftText] = useState('');
   const [currentRequestId, setCurrentRequestId] = useState(null);
-  const [historyItems, setHistoryItems] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
   const [statusType, setStatusType] = useState('info');
-
-  useEffect(() => {
-    loadHistory();
-  }, []);
-
-  async function loadHistory() {
-    try {
-      const serverHistory = await getHistory();
-      const mapped = serverHistory.map((item) => ({
-        id: item.id,
-        messageType: 'generated draft',
-        editedText: item.editedDraft || item.generatedDraft,
-        draftingSeconds: item.draftingSeconds,
-        createdAt: item.createdAt,
-      }));
-      setHistoryItems(mapped);
-    } catch (error) {
-      setStatusType('error');
-      setStatusMessage(error.message || 'Failed to load history.');
-    }
-  }
 
   function handleInputChange(event) {
     const { name, value } = event.target;
@@ -79,7 +55,6 @@ function HomePage() {
       setCurrentRequestId(result.id);
       setStatusType('success');
       setStatusMessage('Draft generated. You can edit it and save it.');
-      await loadHistory();
     } catch (error) {
       setStatusType('error');
       setStatusMessage(error.message || 'Generation failed.');
@@ -104,7 +79,6 @@ function HomePage() {
       } else {
         setStatusMessage('Draft saved successfully.');
       }
-      await loadHistory();
     } catch (error) {
       setStatusType('error');
       setStatusMessage(error.message || 'Save failed.');
@@ -159,8 +133,6 @@ function HomePage() {
         onFeedback={(value) => handleFeedback(value === 5)}
         disabled={loading || !currentRequestId}
       />
-
-      <HistorySection items={historyItems} />
 
       {statusMessage && <p className={`status ${statusType === 'error' ? 'status-error' : ''}`}>{statusMessage}</p>}
     </>

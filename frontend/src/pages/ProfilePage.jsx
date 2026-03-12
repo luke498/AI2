@@ -2,9 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getProfileStats } from '../services/api';
 
+const defaultProfile = {
+  name: 'Student User',
+  email: 'student@example.com',
+};
+
 function ProfilePage() {
   const [stats, setStats] = useState({ draftsGenerated: 0, savedDrafts: 0, feedbackCount: 0 });
   const [error, setError] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [profile, setProfile] = useState(defaultProfile);
+  const [draftProfile, setDraftProfile] = useState(defaultProfile);
 
   useEffect(() => {
     getProfileStats()
@@ -18,13 +26,65 @@ function ProfilePage() {
       .catch((err) => setError(err.message || 'Failed to load profile stats.'));
   }, []);
 
+  function startEdit() {
+    setDraftProfile(profile);
+    setIsEditing(true);
+  }
+
+  function cancelEdit() {
+    setDraftProfile(profile);
+    setIsEditing(false);
+  }
+
+  function saveEdit() {
+    setProfile(draftProfile);
+    setIsEditing(false);
+  }
+
+  function handleDraftChange(event) {
+    const { name, value } = event.target;
+    setDraftProfile((prev) => ({ ...prev, [name]: value }));
+  }
+
   return (
     <section className="card">
       <h2>Profile</h2>
       <p className="muted">Welcome to your DraftMate AI profile. Track your writing activity here.</p>
       <div className="card" style={{ marginBottom: '12px' }}>
-        <p><strong>User:</strong> Student User</p>
-        <p><strong>Email:</strong> student@example.com</p>
+        {isEditing ? (
+          <>
+            <label>
+              Name
+              <input
+                type="text"
+                name="name"
+                value={draftProfile.name}
+                onChange={handleDraftChange}
+                style={{ width: '100%', marginTop: '4px', marginBottom: '8px', padding: '8px' }}
+              />
+            </label>
+            <label>
+              Email
+              <input
+                type="email"
+                name="email"
+                value={draftProfile.email}
+                onChange={handleDraftChange}
+                style={{ width: '100%', marginTop: '4px', marginBottom: '8px', padding: '8px' }}
+              />
+            </label>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button onClick={saveEdit}>Save</button>
+              <button className="secondary" onClick={cancelEdit}>Cancel</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p><strong>User:</strong> {profile.name}</p>
+            <p><strong>Email:</strong> {profile.email}</p>
+            <button onClick={startEdit}>Edit</button>
+          </>
+        )}
       </div>
 
       {error && <p className="status status-error">{error}</p>}

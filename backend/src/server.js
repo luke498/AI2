@@ -151,6 +151,9 @@ app.post('/save', async (req, res, next) => {
       if (!Number.isNaN(diff) && diff >= 0) {
         draftingSeconds = Math.round(diff / 1000);
       }
+      draftingSeconds = Math.round(
+        (new Date(updated.saved_at).getTime() - new Date(updated.generated_at).getTime()) / 1000
+      );
     }
 
     return res.status(200).json({
@@ -226,6 +229,7 @@ app.use((err, req, res, next) => {
 
   const status = err.status || 500;
   const message = err?.message || 'Internal server error.';
+  console.error(err);
   res.status(status).json({ error: message });
 });
 

@@ -1,0 +1,8 @@
+1.เปิดโฟลเดอร์รวม AI2
+(ต้องเข้าหรือสร้างไฟล์ .env แล้วใส่ Groq API ของตัวเอง แล้วเปลี่ยน Model เป็น llama-3.1-8b-instant)
+2.cd เข้าโฟลเดอร์ backend
+3.ทำการ install ด้วยคำสั่ง npm install
+4.ทำการ run ด้วยคำสั่ง npm run dev
+5.เปิด Teminal ใหม่แล้ว cd เข้าโฟลเดอร์ frontend
+6.ทำการ install ด้วยคำสั่ง npm install
+7.ทำการ run ด้วยคำสั่ง npm run dev

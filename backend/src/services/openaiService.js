@@ -79,7 +79,6 @@ Write a concise, clear, polite draft that a user can edit.`;
       console.error('[openai] empty response text', {
         responseId: response?.id,
       });
-      throw new Error('OpenAI response did not contain draft text.');
       throw new Error('Groq response did not contain draft text.');
     }
 

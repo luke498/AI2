@@ -1,3 +1,5 @@
+const API_BASE = "https://ai2-3xrn.onrender.com";
+
 const JSON_HEADERS = {
   'Content-Type': 'application/json',
 };
@@ -5,7 +7,7 @@ const JSON_HEADERS = {
 async function request(url, options = {}) {
   console.log('[api] request', { url, method: options.method || 'GET' });
 
-  const response = await fetch(url, options);
+  const response = await fetch(API_BASE + url, options);
   const rawBody = await response.text();
 
   let data = {};
